@@ -1,0 +1,3 @@
+2026-07-30 14:10:05,431 INFO ipython === bench console session ===
+2026-07-30 14:10:05,431 INFO ipython frappe.get_all("User", fields=["name", "email"])
+2026-07-30 14:10:05,431 INFO ipython === session end ===

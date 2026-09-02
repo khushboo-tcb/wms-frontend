@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(flutter analyze *)",
+      "Bash(nohup flutter run -d chrome --web-port=8765 --web-browser-flag=\"--headless=new\" --web-browser-flag=\"--no-sandbox\")",
+      "Bash(echo \"started pid $!\")",
+      "Bash(kill %1)",
+      "Bash(pkill -f \"flutter run\")",
+      "Read(//tmp/wms-nav-test/**)",
+      "Read(//home/khushboo/wms_frontend/lib/screens/inventory/**)",
+      "Bash(grep -n \"^import\" /home/khushboo/wms_frontend/lib/screens/inventory/inventory_screen.dart *)",
+      "Read(//home/khushboo/wms_frontend/lib/screens/notification/**)"
+    ]
+  }
+}

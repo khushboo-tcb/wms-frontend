@@ -1,0 +1,582 @@
+2026-06-30 17:53:37,420 DEBUG cd frappe-bench && uv venv env --seed --python /usr/local/bin/python3.14
+2026-06-30 17:53:38,952 LOG Getting frappe
+2026-06-30 17:53:38,953 DEBUG cd frappe-bench/apps && git clone https://github.com/frappe/frappe.git --branch version-16 --depth 1 --origin upstream
+2026-06-30 17:53:46,632 LOG Installing frappe
+2026-06-30 17:53:46,635 DEBUG cd /home/khushboo/frappe-bench && uv pip install --quiet -e /home/khushboo/frappe-bench/apps/frappe  --python /home/khushboo/frappe-bench/env/bin/python
+2026-06-30 17:53:47,648 DEBUG cd /home/khushboo/frappe-bench/apps/frappe && yarn install --check-files
+2026-06-30 17:54:22,899 DEBUG cd frappe-bench && bench build
+2026-06-30 17:54:23,097 INFO /home/khushboo/.local/bin/bench build
+2026-06-30 17:54:49,646 LOG setting up backups
+2026-06-30 17:54:49,660 LOG backups were set up
+2026-06-30 17:54:49,661 INFO Bench frappe-bench initialized
+2026-06-30 17:55:10,104 INFO /home/khushboo/.local/bin/bench new-site site1.local
+2026-06-30 17:55:23,623 INFO /home/khushboo/.local/bin/bench get-app erpnext --branch version-16
+2026-06-30 17:55:24,459 LOG Getting erpnext
+2026-06-30 17:55:24,460 DEBUG cd ./apps && git clone https://github.com/frappe/erpnext.git --branch version-16 --depth 1 --origin upstream
+2026-06-30 17:55:30,419 LOG Installing erpnext
+2026-06-30 17:55:30,419 DEBUG cd /home/khushboo/frappe-bench && uv pip install --quiet -e /home/khushboo/frappe-bench/apps/erpnext  --python /home/khushboo/frappe-bench/env/bin/python
+2026-06-30 17:55:37,552 DEBUG cd /home/khushboo/frappe-bench/apps/erpnext && yarn install --check-files
+2026-06-30 17:56:14,807 DEBUG bench build --app erpnext
+2026-06-30 17:56:15,068 INFO /home/khushboo/.local/bin/bench build --app erpnext
+2026-06-30 17:56:28,557 INFO /home/khushboo/.local/bin/bench --site site1.local install-app erpnext
+2026-06-30 17:56:29,427 INFO /home/khushboo/.local/bin/bench start
+2026-06-30 17:56:29,801 INFO /home/khushboo/.local/bin/bench watch
+2026-06-30 17:56:29,805 INFO /home/khushboo/.local/bin/bench socketio
+2026-06-30 17:56:29,805 INFO /home/khushboo/.local/bin/bench schedule
+2026-06-30 17:56:29,877 INFO /home/khushboo/.local/bin/bench worker
+2026-06-30 17:56:29,897 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-06-30 17:58:09,085 INFO /home/khushboo/.local/bin/bench list-sites
+2026-06-30 17:58:13,701 INFO /home/khushboo/.local/bin/bench list-sites
+2026-06-30 17:58:34,340 INFO /home/khushboo/.local/bin/bench use site1.local
+2026-06-30 17:59:27,639 INFO /home/khushboo/.local/bin/bench new-site site1.local
+2026-06-30 18:00:02,235 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-06-30 18:05:03,764 INFO /home/khushboo/.local/bin/bench new-site site1.local
+2026-06-30 18:05:34,396 INFO /home/khushboo/.local/bin/bench new-site site1.local
+2026-06-30 18:06:54,142 INFO /home/khushboo/.local/bin/bench new-site site1.local
+2026-07-01 10:01:52,038 INFO /home/khushboo/.local/bin/bench get-app hrms
+2026-07-01 10:01:53,135 LOG Getting hrms
+2026-07-01 10:01:53,136 DEBUG cd ./apps && git clone https://github.com/frappe/hrms.git  --depth 1 --origin upstream
+2026-07-01 10:01:57,021 LOG Installing hrms
+2026-07-01 10:01:57,022 DEBUG cd /home/khushboo/frappe-bench && uv pip install --quiet -e /home/khushboo/frappe-bench/apps/hrms  --python /home/khushboo/frappe-bench/env/bin/python
+2026-07-01 10:01:58,703 DEBUG cd /home/khushboo/frappe-bench/apps/hrms && yarn install --check-files
+2026-07-01 10:03:17,949 DEBUG bench build --app hrms
+2026-07-01 10:03:18,214 INFO /home/khushboo/.local/bin/bench build --app hrms
+2026-07-01 10:04:10,276 INFO /home/khushboo/.local/bin/bench get-app --branch version-16 hrms
+2026-07-01 10:04:29,001 INFO App moved from apps/hrms to archived/apps/hrms-2026-07-01
+2026-07-01 10:04:29,005 LOG Getting hrms
+2026-07-01 10:04:29,005 DEBUG cd ./apps && git clone https://github.com/frappe/hrms.git --branch version-16 --depth 1 --origin upstream
+2026-07-01 10:04:32,246 LOG Installing hrms
+2026-07-01 10:04:32,247 DEBUG cd /home/khushboo/frappe-bench && uv pip install --quiet -e /home/khushboo/frappe-bench/apps/hrms  --python /home/khushboo/frappe-bench/env/bin/python
+2026-07-01 10:04:32,998 DEBUG cd /home/khushboo/frappe-bench/apps/hrms && yarn install --check-files
+2026-07-01 10:05:06,808 DEBUG bench build --app hrms
+2026-07-01 10:05:07,028 INFO /home/khushboo/.local/bin/bench build --app hrms
+2026-07-01 10:07:22,747 INFO /home/khushboo/.local/bin/bench list-sites
+2026-07-01 10:09:42,520 INFO /home/khushboo/.local/bin/bench new-site site1.local
+2026-07-01 10:14:55,890 INFO /home/khushboo/.local/bin/bench new-site site1.local
+2026-07-01 10:20:01,097 INFO /home/khushboo/.local/bin/bench --site site1.local install-app erpnext
+2026-07-01 10:22:52,699 INFO /home/khushboo/.local/bin/bench --site site1.local install-app hrms
+2026-07-01 10:25:34,806 INFO /home/khushboo/.local/bin/bench start
+2026-07-01 10:25:35,181 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-01 10:25:35,204 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-01 10:25:35,211 INFO /home/khushboo/.local/bin/bench worker
+2026-07-01 10:25:35,240 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-01 10:25:35,241 INFO /home/khushboo/.local/bin/bench watch
+2026-07-01 10:26:21,596 INFO /home/khushboo/.local/bin/bench migrate
+2026-07-01 10:26:39,651 INFO /home/khushboo/.local/bin/bench migrate
+2026-07-01 10:27:18,833 INFO /home/khushboo/.local/bin/bench --site site1.local migrate
+2026-07-01 10:30:08,702 INFO /home/khushboo/.local/bin/bench use site1.local
+2026-07-01 10:30:22,743 INFO /home/khushboo/.local/bin/bench build
+2026-07-01 10:32:09,736 INFO /home/khushboo/.local/bin/bench migrate
+2026-07-01 10:34:39,155 INFO /home/khushboo/.local/bin/bench list-sites
+2026-07-01 10:35:14,840 INFO /home/khushboo/.local/bin/bench use site1.local
+2026-07-01 10:35:34,376 INFO /home/khushboo/.local/bin/bench doctor
+2026-07-01 10:36:38,341 INFO /home/khushboo/.local/bin/bench --site site1.local list-apps
+2026-07-01 10:37:10,790 INFO /home/khushboo/.local/bin/bench start
+2026-07-01 10:37:11,170 INFO /home/khushboo/.local/bin/bench worker
+2026-07-01 10:37:11,170 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-01 10:37:11,171 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-01 10:37:11,257 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-01 10:37:11,267 INFO /home/khushboo/.local/bin/bench watch
+2026-07-01 10:39:44,031 INFO /home/khushboo/.local/bin/bench migrate
+2026-07-01 10:40:42,821 INFO /home/khushboo/.local/bin/bench build
+2026-07-01 10:47:37,910 INFO /home/khushboo/.local/bin/bench start
+2026-07-01 10:47:38,186 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-01 10:47:38,196 INFO /home/khushboo/.local/bin/bench watch
+2026-07-01 10:47:38,196 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-01 10:47:38,248 INFO /home/khushboo/.local/bin/bench worker
+2026-07-01 10:47:38,262 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-01 12:00:02,033 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-01 13:37:52,195 INFO /home/khushboo/.local/bin/bench start
+2026-07-01 13:37:52,558 INFO /home/khushboo/.local/bin/bench worker
+2026-07-01 13:37:52,572 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-01 13:37:52,574 INFO /home/khushboo/.local/bin/bench watch
+2026-07-01 13:37:52,632 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-01 13:37:52,634 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-01 18:00:01,684 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-02 09:36:35,137 INFO /home/khushboo/.local/bin/bench start
+2026-07-02 09:36:35,589 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-02 09:36:35,593 INFO /home/khushboo/.local/bin/bench watch
+2026-07-02 09:36:35,593 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-02 09:36:35,673 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-02 09:36:35,679 INFO /home/khushboo/.local/bin/bench worker
+2026-07-02 12:00:02,254 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-02 18:00:02,343 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-03 10:14:25,711 INFO /home/khushboo/.local/bin/bench start
+2026-07-03 10:14:26,125 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-03 10:14:26,142 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-03 10:14:26,164 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-03 10:14:26,193 INFO /home/khushboo/.local/bin/bench worker
+2026-07-03 10:14:26,199 INFO /home/khushboo/.local/bin/bench watch
+2026-07-03 12:00:02,011 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-03 15:41:40,716 INFO /home/khushboo/.local/bin/bench migrate
+2026-07-03 15:42:53,356 INFO /home/khushboo/.local/bin/bench start
+2026-07-03 15:42:53,859 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-03 15:42:53,893 INFO /home/khushboo/.local/bin/bench watch
+2026-07-03 15:42:53,897 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-03 15:42:53,899 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-03 15:42:53,905 INFO /home/khushboo/.local/bin/bench worker
+2026-07-03 18:00:01,493 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-04 09:29:42,098 INFO /home/khushboo/.local/bin/bench start
+2026-07-04 09:29:42,575 INFO /home/khushboo/.local/bin/bench worker
+2026-07-04 09:29:42,576 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-04 09:29:42,580 INFO /home/khushboo/.local/bin/bench watch
+2026-07-04 09:29:42,633 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-04 09:29:42,646 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-04 12:00:02,024 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-06 10:20:10,413 INFO /home/khushboo/.local/bin/bench start
+2026-07-06 10:20:10,711 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-06 10:20:10,713 INFO /home/khushboo/.local/bin/bench worker
+2026-07-06 10:20:10,713 INFO /home/khushboo/.local/bin/bench watch
+2026-07-06 10:20:10,758 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-06 10:20:10,765 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-06 12:00:01,575 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-07 09:20:41,644 INFO /home/khushboo/.local/bin/bench start
+2026-07-07 09:20:41,938 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-07 09:20:41,951 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-07 09:20:41,957 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-07 09:20:41,994 INFO /home/khushboo/.local/bin/bench watch
+2026-07-07 09:20:41,998 INFO /home/khushboo/.local/bin/bench worker
+2026-07-07 12:00:01,683 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-07 18:00:01,302 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-08 09:52:47,072 INFO /home/khushboo/.local/bin/bench start
+2026-07-08 09:52:47,362 INFO /home/khushboo/.local/bin/bench watch
+2026-07-08 09:52:47,362 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-08 09:52:47,364 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-08 09:52:47,424 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-08 09:52:47,424 INFO /home/khushboo/.local/bin/bench worker
+2026-07-08 12:00:02,272 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-08 18:00:01,621 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-09 09:29:05,799 INFO /home/khushboo/.local/bin/bench start
+2026-07-09 09:29:06,311 INFO /home/khushboo/.local/bin/bench worker
+2026-07-09 09:29:06,321 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-09 09:29:06,333 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-09 09:29:06,379 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-09 09:29:06,382 INFO /home/khushboo/.local/bin/bench watch
+2026-07-09 12:00:01,656 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-09 18:00:02,046 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-10 12:00:01,906 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-10 18:00:01,762 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-11 09:41:33,328 INFO /home/khushboo/.local/bin/bench start
+2026-07-11 09:41:33,713 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-11 09:41:33,729 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-11 09:41:33,740 INFO /home/khushboo/.local/bin/bench worker
+2026-07-11 09:41:33,792 INFO /home/khushboo/.local/bin/bench watch
+2026-07-11 09:41:33,798 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-11 12:00:01,861 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-11 18:00:01,709 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-13 09:22:50,533 INFO /home/khushboo/.local/bin/bench start
+2026-07-13 09:22:50,825 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-13 09:22:50,826 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-13 09:22:50,826 INFO /home/khushboo/.local/bin/bench watch
+2026-07-13 09:22:50,890 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-13 09:22:50,895 INFO /home/khushboo/.local/bin/bench worker
+2026-07-13 12:00:01,862 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-14 12:00:02,241 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-15 12:00:02,379 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-15 14:38:13,994 INFO /home/khushboo/.local/bin/bench start
+2026-07-15 14:38:14,372 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-15 14:38:14,373 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-15 14:38:14,411 INFO /home/khushboo/.local/bin/bench worker
+2026-07-15 14:38:14,419 INFO /home/khushboo/.local/bin/bench watch
+2026-07-15 14:38:14,444 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-15 15:21:17,132 INFO /home/khushboo/.local/bin/bench --site site1.local console
+2026-07-15 15:21:52,043 INFO /home/khushboo/.local/bin/bench list-sites
+2026-07-16 10:00:31,244 INFO /home/khushboo/.local/bin/bench start
+2026-07-16 10:00:31,774 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-16 10:00:31,780 INFO /home/khushboo/.local/bin/bench worker
+2026-07-16 10:00:31,793 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-16 10:00:31,804 INFO /home/khushboo/.local/bin/bench watch
+2026-07-16 10:00:31,813 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-16 12:00:02,531 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-16 18:00:01,862 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-17 09:33:01,199 INFO /home/khushboo/.local/bin/bench start
+2026-07-17 09:33:01,602 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-17 09:33:01,617 INFO /home/khushboo/.local/bin/bench watch
+2026-07-17 09:33:01,618 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-17 09:33:01,672 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-17 09:33:01,676 INFO /home/khushboo/.local/bin/bench worker
+2026-07-17 12:00:01,958 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-20 09:42:52,852 INFO /home/khushboo/.local/bin/bench start
+2026-07-20 09:42:53,279 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-20 09:42:53,284 INFO /home/khushboo/.local/bin/bench worker
+2026-07-20 09:42:53,293 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-20 09:42:53,356 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-20 09:42:53,363 INFO /home/khushboo/.local/bin/bench watch
+2026-07-21 12:00:02,267 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-21 18:00:01,795 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-22 10:21:06,753 INFO /home/khushboo/.local/bin/bench start
+2026-07-22 10:21:07,225 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-22 10:21:07,241 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-22 10:21:07,244 INFO /home/khushboo/.local/bin/bench worker
+2026-07-22 10:21:07,278 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-22 10:21:07,282 INFO /home/khushboo/.local/bin/bench watch
+2026-07-22 12:00:01,830 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-23 12:00:01,603 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-24 12:18:12,019 INFO /home/khushboo/.local/bin/bench start
+2026-07-24 12:18:12,445 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-24 12:18:12,454 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-24 12:18:12,502 INFO /home/khushboo/.local/bin/bench watch
+2026-07-24 12:18:12,520 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-24 12:18:12,526 INFO /home/khushboo/.local/bin/bench worker
+2026-07-25 12:00:02,618 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-27 09:54:46,030 INFO /home/khushboo/.local/bin/bench start
+2026-07-27 09:54:46,482 INFO /home/khushboo/.local/bin/bench worker
+2026-07-27 09:54:46,482 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-27 09:54:46,490 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-27 09:54:46,568 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-27 09:54:46,576 INFO /home/khushboo/.local/bin/bench watch
+2026-07-27 09:55:54,113 INFO /home/khushboo/.local/bin/bench migrate
+2026-07-27 09:56:38,978 INFO /home/khushboo/.local/bin/bench start
+2026-07-27 09:56:39,340 INFO /home/khushboo/.local/bin/bench watch
+2026-07-27 09:56:39,344 INFO /home/khushboo/.local/bin/bench worker
+2026-07-27 09:56:39,344 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-27 09:56:39,433 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-27 09:56:39,433 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-27 09:56:48,458 INFO /home/khushboo/.local/bin/bench clear-cache
+2026-07-27 09:57:01,699 INFO /home/khushboo/.local/bin/bench clear-website-c-cacache
+2026-07-27 09:57:08,569 INFO /home/khushboo/.local/bin/bench clear-website-c-cacche
+2026-07-27 09:57:19,757 INFO /home/khushboo/.local/bin/bench clear-website-c-cacache
+2026-07-27 09:57:25,811 INFO /home/khushboo/.local/bin/bench clear-website-c-cache
+2026-07-27 09:57:35,381 INFO /home/khushboo/.local/bin/bench clear-website-cache
+2026-07-27 12:00:02,093 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-27 18:00:02,758 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-28 11:46:40,279 INFO /home/khushboo/.local/bin/bench start
+2026-07-28 11:46:40,771 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-28 11:46:40,776 INFO /home/khushboo/.local/bin/bench worker
+2026-07-28 11:46:40,780 INFO /home/khushboo/.local/bin/bench watch
+2026-07-28 11:46:40,832 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-28 11:46:40,840 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-28 12:00:02,155 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-28 18:00:01,949 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-29 12:00:02,646 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-29 18:00:02,246 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-30 12:00:02,558 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-30 12:01:57,922 INFO /home/khushboo/.local/bin/bench start
+2026-07-30 12:01:58,348 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-30 12:01:58,352 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-30 12:01:58,367 INFO /home/khushboo/.local/bin/bench worker
+2026-07-30 12:01:58,397 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-30 12:01:58,432 INFO /home/khushboo/.local/bin/bench watch
+2026-07-30 13:40:21,451 INFO /home/khushboo/.local/bin/bench version
+2026-07-30 14:05:58,350 INFO /home/khushboo/.local/bin/bench --site site1.local console
+2026-07-30 18:00:02,388 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-31 09:35:52,072 INFO /home/khushboo/.local/bin/bench start
+2026-07-31 09:35:52,497 INFO /home/khushboo/.local/bin/bench watch
+2026-07-31 09:35:52,500 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-31 09:35:52,502 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-31 09:35:52,568 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-31 09:35:52,578 INFO /home/khushboo/.local/bin/bench worker
+2026-07-31 09:50:04,672 INFO /home/khushboo/.local/bin/bench new-site khushboo.local
+2026-07-31 09:51:24,358 INFO /home/khushboo/.local/bin/bench new-site khushboo.local
+2026-07-31 09:51:52,249 INFO /home/khushboo/.local/bin/bench new-site khushboo.local
+2026-07-31 09:53:42,563 INFO /home/khushboo/.local/bin/bench new-site khushboo.local
+2026-07-31 09:56:31,755 INFO /home/khushboo/.local/bin/bench --site khushboo.local install-app erpnext
+2026-07-31 09:59:26,467 INFO /home/khushboo/.local/bin/bench list-sites
+2026-07-31 10:03:26,238 INFO /home/khushboo/.local/bin/bench start
+2026-07-31 10:03:26,643 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-31 10:03:26,649 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-31 10:03:26,657 INFO /home/khushboo/.local/bin/bench watch
+2026-07-31 10:03:26,722 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-31 10:03:26,739 INFO /home/khushboo/.local/bin/bench worker
+2026-07-31 10:06:35,064 INFO /home/khushboo/.local/bin/bench use khushboo.local
+2026-07-31 10:06:46,800 INFO /home/khushboo/.local/bin/bench start
+2026-07-31 10:06:47,217 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-31 10:06:47,220 INFO /home/khushboo/.local/bin/bench worker
+2026-07-31 10:06:47,222 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-31 10:06:47,297 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-31 10:06:47,308 INFO /home/khushboo/.local/bin/bench watch
+2026-07-31 11:55:09,192 INFO /home/khushboo/.local/bin/bench start
+2026-07-31 11:56:19,617 INFO /home/khushboo/.local/bin/bench start
+2026-07-31 11:57:00,279 INFO /home/khushboo/.local/bin/bench stop
+2026-07-31 11:57:21,039 INFO /home/khushboo/.local/bin/bench start
+2026-07-31 11:57:21,433 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-31 11:57:21,443 INFO /home/khushboo/.local/bin/bench worker
+2026-07-31 11:57:21,451 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-31 11:57:21,497 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-31 11:57:21,500 INFO /home/khushboo/.local/bin/bench watch
+2026-07-31 12:00:01,949 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-07-31 12:01:58,786 INFO /home/khushboo/.local/bin/bench use site1.local
+2026-07-31 12:02:06,364 INFO /home/khushboo/.local/bin/bench start
+2026-07-31 12:02:06,736 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-31 12:02:06,741 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-31 12:02:06,759 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-31 12:02:06,827 INFO /home/khushboo/.local/bin/bench watch
+2026-07-31 12:02:06,837 INFO /home/khushboo/.local/bin/bench worker
+2026-07-31 12:48:50,230 INFO /home/khushboo/.local/bin/bench use khushboo.local
+2026-07-31 12:48:57,186 INFO /home/khushboo/.local/bin/bench start
+2026-07-31 12:48:57,574 INFO /home/khushboo/.local/bin/bench worker
+2026-07-31 12:48:57,638 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-31 12:48:57,650 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-31 12:48:57,657 INFO /home/khushboo/.local/bin/bench watch
+2026-07-31 12:48:57,671 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-31 13:13:36,617 INFO /home/khushboo/.local/bin/bench use sites.local
+2026-07-31 13:13:58,338 INFO /home/khushboo/.local/bin/bench use site1.local
+2026-07-31 13:14:09,896 INFO /home/khushboo/.local/bin/bench start
+2026-07-31 13:14:10,390 INFO /home/khushboo/.local/bin/bench watch
+2026-07-31 13:14:10,404 INFO /home/khushboo/.local/bin/bench schedule
+2026-07-31 13:14:10,411 INFO /home/khushboo/.local/bin/bench socketio
+2026-07-31 13:14:10,461 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-07-31 13:14:10,466 INFO /home/khushboo/.local/bin/bench worker
+2026-07-31 18:00:02,297 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-03 09:55:56,899 INFO /home/khushboo/.local/bin/bench start
+2026-08-03 09:55:57,517 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-03 09:55:57,524 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-03 09:55:57,526 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-03 09:55:57,541 INFO /home/khushboo/.local/bin/bench watch
+2026-08-03 09:55:57,559 INFO /home/khushboo/.local/bin/bench worker
+2026-08-03 12:00:02,566 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-03 18:00:02,424 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-04 10:19:46,734 INFO /home/khushboo/.local/bin/bench start
+2026-08-04 10:19:47,191 INFO /home/khushboo/.local/bin/bench worker
+2026-08-04 10:19:47,204 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-04 10:19:47,209 INFO /home/khushboo/.local/bin/bench watch
+2026-08-04 10:19:47,265 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-04 10:19:47,283 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-04 12:00:01,373 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-04 18:00:02,509 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-05 10:11:17,227 INFO /home/khushboo/.local/bin/bench start
+2026-08-05 10:11:17,840 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-05 10:11:17,845 INFO /home/khushboo/.local/bin/bench worker
+2026-08-05 10:11:17,845 INFO /home/khushboo/.local/bin/bench watch
+2026-08-05 10:11:17,846 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-05 10:11:17,859 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-05 10:13:16,384 INFO /home/khushboo/.local/bin/bench start
+2026-08-05 10:14:35,204 INFO /home/khushboo/.local/bin/bench start
+2026-08-05 10:17:10,016 INFO /home/khushboo/.local/bin/bench use site1.local
+2026-08-05 10:17:27,470 INFO /home/khushboo/.local/bin/bench start
+2026-08-05 10:17:54,201 INFO /home/khushboo/.local/bin/bench start
+2026-08-05 10:18:31,899 INFO /home/khushboo/.local/bin/bench start
+2026-08-05 10:21:49,907 INFO /home/khushboo/.local/bin/bench start
+2026-08-05 10:29:02,251 INFO /home/khushboo/.local/bin/bench start
+2026-08-05 10:29:02,636 INFO /home/khushboo/.local/bin/bench watch
+2026-08-05 10:29:02,713 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-05 10:29:02,724 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-05 10:29:02,724 INFO /home/khushboo/.local/bin/bench worker
+2026-08-05 10:29:02,728 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-05 10:32:50,938 INFO /home/khushboo/.local/bin/bench clear-cache
+2026-08-05 10:33:03,034 INFO /home/khushboo/.local/bin/bench clear-website-cache
+2026-08-05 10:33:41,325 INFO /home/khushboo/.local/bin/bench build
+2026-08-05 10:40:55,812 INFO /home/khushboo/.local/bin/bench start
+2026-08-05 10:40:56,358 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-05 10:40:56,360 INFO /home/khushboo/.local/bin/bench watch
+2026-08-05 10:40:56,370 INFO /home/khushboo/.local/bin/bench worker
+2026-08-05 10:40:56,419 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-05 10:40:56,436 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-05 12:00:01,615 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-05 18:00:01,852 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-06 10:11:01,364 INFO /home/khushboo/.local/bin/bench start
+2026-08-06 10:11:01,688 INFO /home/khushboo/.local/bin/bench worker
+2026-08-06 10:11:01,693 INFO /home/khushboo/.local/bin/bench watch
+2026-08-06 10:11:01,699 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-06 10:11:01,749 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-06 10:11:01,749 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-06 12:00:01,647 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-06 18:00:01,922 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-07 10:17:59,283 INFO /home/khushboo/.local/bin/bench start
+2026-08-07 10:17:59,759 INFO /home/khushboo/.local/bin/bench watch
+2026-08-07 10:17:59,764 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-07 10:17:59,767 INFO /home/khushboo/.local/bin/bench worker
+2026-08-07 10:17:59,845 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-07 10:17:59,846 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-07 12:00:02,149 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-07 18:00:02,525 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-08 12:00:01,656 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-10 10:35:42,779 INFO /home/khushboo/.local/bin/bench start
+2026-08-10 10:35:43,248 INFO /home/khushboo/.local/bin/bench watch
+2026-08-10 10:35:43,249 INFO /home/khushboo/.local/bin/bench worker
+2026-08-10 10:35:43,249 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-10 10:35:43,263 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-10 10:35:43,273 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-10 12:00:02,215 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-10 18:00:02,215 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-11 10:46:58,878 INFO /home/khushboo/.local/bin/bench start
+2026-08-11 10:46:59,374 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-11 10:46:59,398 INFO /home/khushboo/.local/bin/bench worker
+2026-08-11 10:46:59,400 INFO /home/khushboo/.local/bin/bench watch
+2026-08-11 10:46:59,461 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-11 10:46:59,467 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-11 12:00:02,230 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-12 12:00:02,460 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-12 18:00:02,508 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-13 12:00:01,823 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-13 18:00:01,730 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-14 12:00:02,003 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-14 18:00:02,328 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-17 12:00:02,547 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-17 12:17:39,607 INFO /home/khushboo/.local/bin/bench start
+2026-08-17 12:17:40,104 INFO /home/khushboo/.local/bin/bench watch
+2026-08-17 12:17:40,141 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-17 12:17:40,154 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-17 12:17:40,158 INFO /home/khushboo/.local/bin/bench worker
+2026-08-17 12:17:40,167 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-17 12:22:01,304 INFO /home/khushboo/.local/bin/bench clear-cache
+2026-08-17 12:22:21,050 INFO /home/khushboo/.local/bin/bench clear-website-cache
+2026-08-17 12:23:26,303 INFO /home/khushboo/.local/bin/bench start
+2026-08-17 12:23:26,707 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-17 12:23:26,713 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-17 12:23:26,714 INFO /home/khushboo/.local/bin/bench worker
+2026-08-17 12:23:26,794 INFO /home/khushboo/.local/bin/bench watch
+2026-08-17 12:23:26,795 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-17 12:28:53,089 INFO /home/khushboo/.local/bin/bench new-site wms.local
+2026-08-17 12:30:06,929 INFO /home/khushboo/.local/bin/bench new-site wms.local
+2026-08-17 12:37:09,368 INFO /home/khushboo/.local/bin/bench --site wms.local install-app erpnext
+2026-08-17 12:40:11,947 INFO /home/khushboo/.local/bin/bench use wms.local
+2026-08-17 12:41:00,153 INFO /home/khushboo/.local/bin/bench start
+2026-08-17 12:42:25,287 INFO /home/khushboo/.local/bin/bench start
+2026-08-17 12:45:58,853 INFO /home/khushboo/.local/bin/bench start
+2026-08-17 12:45:59,287 INFO /home/khushboo/.local/bin/bench worker
+2026-08-17 12:45:59,338 INFO /home/khushboo/.local/bin/bench watch
+2026-08-17 12:45:59,341 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-17 12:45:59,366 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-17 12:45:59,383 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-17 14:34:53,348 INFO /home/khushboo/.local/bin/bench new-app tcb_wms
+2026-08-17 14:34:53,361 LOG creating new app tcb_wms
+2026-08-17 14:38:33,307 LOG Installing tcb_wms
+2026-08-17 14:38:33,310 DEBUG cd /home/khushboo/frappe-bench && uv pip install --quiet -e /home/khushboo/frappe-bench/apps/tcb_wms  --python /home/khushboo/frappe-bench/env/bin/python
+2026-08-17 14:38:34,929 DEBUG bench build --app tcb_wms
+2026-08-17 14:38:35,124 INFO /home/khushboo/.local/bin/bench build --app tcb_wms
+2026-08-17 14:40:20,798 INFO /home/khushboo/.local/bin/bench --site wms.local install-app tcb_wms
+2026-08-17 14:42:55,183 INFO /home/khushboo/.local/bin/bench use wms.local
+2026-08-17 14:43:03,398 INFO /home/khushboo/.local/bin/bench start
+2026-08-17 14:43:03,767 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-17 14:43:03,802 INFO /home/khushboo/.local/bin/bench watch
+2026-08-17 14:43:03,813 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-17 14:43:03,836 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-17 14:43:03,848 INFO /home/khushboo/.local/bin/bench worker
+2026-08-17 14:59:42,447 INFO /home/khushboo/.local/bin/bench set-config -g developer_mode 1
+2026-08-17 14:59:47,969 INFO /home/khushboo/.local/bin/bench migrate
+2026-08-17 15:00:19,253 INFO /home/khushboo/.local/bin/bench start
+2026-08-17 15:00:19,695 INFO /home/khushboo/.local/bin/bench worker
+2026-08-17 15:00:19,724 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-17 15:00:19,737 INFO /home/khushboo/.local/bin/bench watch
+2026-08-17 15:00:19,752 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-17 15:00:19,774 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-17 17:37:38,282 INFO /home/khushboo/.local/bin/bench migrate
+2026-08-17 17:38:11,242 INFO /home/khushboo/.local/bin/bench start
+2026-08-17 17:38:11,768 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-17 17:38:11,772 INFO /home/khushboo/.local/bin/bench worker
+2026-08-17 17:38:11,827 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-17 17:38:11,848 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-17 17:38:11,856 INFO /home/khushboo/.local/bin/bench watch
+2026-08-17 18:00:01,494 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-18 09:26:55,891 INFO /home/khushboo/.local/bin/bench start
+2026-08-18 09:26:56,396 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-18 09:26:56,419 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-18 09:26:56,429 INFO /home/khushboo/.local/bin/bench worker
+2026-08-18 09:26:56,484 INFO /home/khushboo/.local/bin/bench watch
+2026-08-18 09:26:56,485 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-18 12:00:01,879 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-18 18:00:01,952 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-19 10:09:56,310 INFO /home/khushboo/.local/bin/bench start
+2026-08-19 10:09:56,778 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-19 10:09:56,822 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-19 10:09:56,822 INFO /home/khushboo/.local/bin/bench watch
+2026-08-19 10:09:56,847 INFO /home/khushboo/.local/bin/bench worker
+2026-08-19 10:09:56,858 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-19 12:00:02,185 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-19 18:00:01,630 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-20 10:57:12,802 INFO /home/khushboo/.local/bin/bench start
+2026-08-20 10:57:13,306 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-20 10:57:13,310 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-20 10:57:13,316 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-20 10:57:13,368 INFO /home/khushboo/.local/bin/bench watch
+2026-08-20 10:57:13,379 INFO /home/khushboo/.local/bin/bench worker
+2026-08-20 12:00:01,964 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-20 18:00:02,602 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-21 09:48:25,853 INFO /home/khushboo/.local/bin/bench start
+2026-08-21 09:48:26,263 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-21 09:48:26,263 INFO /home/khushboo/.local/bin/bench worker
+2026-08-21 09:48:26,266 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-21 09:48:26,318 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-21 09:48:26,325 INFO /home/khushboo/.local/bin/bench watch
+2026-08-21 11:38:16,256 INFO /home/khushboo/.local/bin/bench start
+2026-08-21 11:38:16,724 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-21 11:38:16,727 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-21 11:38:16,727 INFO /home/khushboo/.local/bin/bench watch
+2026-08-21 11:38:16,795 INFO /home/khushboo/.local/bin/bench worker
+2026-08-21 11:38:16,818 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-21 12:00:01,953 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-21 18:00:02,328 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-22 09:51:35,857 INFO /home/khushboo/.local/bin/bench start
+2026-08-22 09:51:36,311 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-22 09:51:36,318 INFO /home/khushboo/.local/bin/bench watch
+2026-08-22 09:51:36,323 INFO /home/khushboo/.local/bin/bench worker
+2026-08-22 09:51:36,395 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-22 09:51:36,407 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-22 12:00:02,437 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-22 12:56:21,699 INFO /home/khushboo/.local/bin/bench --site wms.local set-config allow_cors http://localhost:33923
+2026-08-22 12:58:42,889 INFO /home/khushboo/.local/bin/bench --site wms.local clear-cache
+2026-08-22 13:05:04,373 INFO /home/khushboo/.local/bin/bench start
+2026-08-22 13:05:04,880 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-22 13:05:04,882 INFO /home/khushboo/.local/bin/bench watch
+2026-08-22 13:05:04,917 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-22 13:05:04,941 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-22 13:05:04,961 INFO /home/khushboo/.local/bin/bench worker
+2026-08-22 13:29:33,828 INFO /home/khushboo/.local/bin/bench --site wms.local clear-cache
+2026-08-22 15:01:24,814 INFO /home/khushboo/.local/bin/bench --site wms.local clear-cache
+2026-08-22 16:09:23,187 INFO /home/khushboo/.local/bin/bench --site wms.local clear-cache
+2026-08-22 16:15:57,914 INFO /home/khushboo/.local/bin/bench --site wms.local clear-cache
+2026-08-22 18:00:02,076 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-24 09:20:34,581 INFO /home/khushboo/.local/bin/bench start
+2026-08-24 09:20:34,863 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-24 09:20:34,872 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-24 09:20:34,873 INFO /home/khushboo/.local/bin/bench watch
+2026-08-24 09:20:34,915 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-24 09:20:34,928 INFO /home/khushboo/.local/bin/bench worker
+2026-08-24 10:14:04,945 INFO /home/khushboo/.local/bin/bench --site wms.local show-config
+2026-08-24 10:19:09,629 INFO /home/khushboo/.local/bin/bench --site wms.local set-config allow_cors http://localhost:5000
+2026-08-24 10:19:42,829 INFO /home/khushboo/.local/bin/bench --site wms.local show-config
+2026-08-24 10:21:01,925 INFO /home/khushboo/.local/bin/bench start
+2026-08-24 10:21:02,364 INFO /home/khushboo/.local/bin/bench worker
+2026-08-24 10:21:02,368 INFO /home/khushboo/.local/bin/bench watch
+2026-08-24 10:21:02,378 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-24 10:21:02,425 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-24 10:21:02,430 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-24 12:00:02,486 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-24 14:32:55,715 INFO /home/khushboo/.local/bin/bench start
+2026-08-24 14:33:22,737 INFO /home/khushboo/.local/bin/bench start
+2026-08-24 14:33:23,022 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-24 14:33:23,024 INFO /home/khushboo/.local/bin/bench watch
+2026-08-24 14:33:23,025 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-24 14:33:23,082 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-24 14:33:23,088 INFO /home/khushboo/.local/bin/bench worker
+2026-08-24 14:38:36,728 INFO /home/khushboo/.local/bin/bench --site wms.local set-config allow_cors *
+2026-08-24 14:38:48,642 INFO /home/khushboo/.local/bin/bench --site wms.local clear-cache
+2026-08-24 14:39:04,826 INFO /home/khushboo/.local/bin/bench start
+2026-08-24 17:42:08,458 INFO /home/khushboo/.local/bin/bench start
+2026-08-24 18:00:02,293 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-25 09:43:39,641 INFO /home/khushboo/.local/bin/bench start
+2026-08-25 09:43:39,990 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-25 09:43:39,999 INFO /home/khushboo/.local/bin/bench watch
+2026-08-25 09:43:40,043 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-25 09:43:40,065 INFO /home/khushboo/.local/bin/bench worker
+2026-08-25 09:43:40,074 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-25 12:00:02,083 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-25 15:39:18,048 INFO /home/khushboo/.local/bin/bench clear-cache
+2026-08-25 15:39:24,441 INFO /home/khushboo/.local/bin/bench start
+2026-08-25 15:39:24,863 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-25 15:39:24,900 INFO /home/khushboo/.local/bin/bench watch
+2026-08-25 15:39:24,911 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-25 15:39:24,941 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-25 15:39:24,957 INFO /home/khushboo/.local/bin/bench worker
+2026-08-25 18:00:01,685 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-26 09:22:10,392 INFO /home/khushboo/.local/bin/bench start
+2026-08-26 09:22:10,802 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-26 09:22:10,803 INFO /home/khushboo/.local/bin/bench watch
+2026-08-26 09:22:10,805 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-26 09:22:10,864 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-26 09:22:10,869 INFO /home/khushboo/.local/bin/bench worker
+2026-08-26 12:00:02,069 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-26 15:59:42,838 INFO /home/khushboo/.local/bin/bench start
+2026-08-26 15:59:43,562 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-26 15:59:43,569 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-26 15:59:43,587 INFO /home/khushboo/.local/bin/bench worker
+2026-08-26 15:59:43,607 INFO /home/khushboo/.local/bin/bench watch
+2026-08-26 15:59:43,615 INFO /home/khushboo/.local/bin/bench socketio
+2026-08-26 18:00:01,585 INFO /home/khushboo/.local/bin/bench --verbose --site all backup
+2026-08-27 09:33:30,561 INFO /home/khushboo/.local/bin/bench start
+2026-08-27 09:33:31,023 INFO /home/khushboo/.local/bin/bench watch
+2026-08-27 09:33:31,028 INFO /home/khushboo/.local/bin/bench schedule
+2026-08-27 09:33:31,032 INFO /home/khushboo/.local/bin/bench worker
+2026-08-27 09:33:31,100 INFO /home/khushboo/.local/bin/bench serve --port 8000
+2026-08-27 09:33:31,101 INFO /home/khushboo/.local/bin/bench socketio
