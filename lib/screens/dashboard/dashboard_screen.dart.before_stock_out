@@ -1,0 +1,2079 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import '../../main.dart';
+import '../inventory/inventory_screen.dart';
+import '../inbound/inbound_screen.dart';
+import '../outbound/outbound_screen.dart';
+import '../notification/notification_screen.dart';
+import '../warehouse/warehouse_screen.dart';
+import '../users/user_management_screen.dart';
+import '../reports/reports_screen.dart';
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() =>
+      _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  // ============================================================
+  // FASTAPI
+  // ============================================================
+
+  static const String baseUrl = 'http://127.0.0.1:8001';
+
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  // ============================================================
+  // DASHBOARD VALUES
+  // ============================================================
+
+  String _totalStock = '0';
+  String _stockInToday = '--';
+  String _stockOutToday = '--';
+  String _availableBins = '--';
+  String _pendingTasksCount = '--';
+
+  double _inventoryProgress = 0;
+
+  String _rawMaterials = '--';
+  String _rawMaterialsPercentage = '--';
+
+  String _finishedGoods = '--';
+  String _finishedGoodsPercentage = '--';
+
+  String _packaging = '--';
+  String _packagingPercentage = '--';
+
+  String _consumables = '--';
+  String _consumablesPercentage = '--';
+
+  double? _rackUtilization;
+  double? _binUtilization;
+  double? _levelUtilization;
+
+ List<dynamic> _recentActivitiesData = [];
+ List<dynamic> _pendingTasksData = [];
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDashboard();
+  }
+
+  // ============================================================
+  // LOAD DASHBOARD
+  // ============================================================
+
+  Future<void> _loadDashboard() async {
+    final token = AppSession.token;
+
+    if (token == null || token.isEmpty) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Authentication session not found.';
+      });
+
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/dashboard/'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+
+        if (decoded is Map<String, dynamic> &&
+            decoded['success'] == true) {
+          final data = decoded['data'];
+
+          if (data is Map<String, dynamic>) {
+            _setDashboardData(data);
+          } else {
+            throw Exception(
+              'Invalid dashboard data received.',
+            );
+          }
+        } else {
+          throw Exception(
+            decoded['message']?.toString() ??
+                'Unable to load dashboard data.',
+          );
+        }
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          'Session expired. Please login again.',
+        );
+      } else {
+        try {
+          final decoded = jsonDecode(response.body);
+
+          throw Exception(
+            decoded['detail']?.toString() ??
+                'Dashboard API returned ${response.statusCode}.',
+          );
+        } catch (_) {
+          throw Exception(
+            'Dashboard API returned ${response.statusCode}.',
+          );
+        }
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _errorMessage = e.toString().replaceFirst(
+          'Exception: ',
+          '',
+        );
+      });
+
+      return;
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+      _errorMessage = null;
+    });
+  }
+
+  // ============================================================
+  // SET DASHBOARD DATA
+  // ============================================================
+
+  void _setDashboardData(
+    Map<String, dynamic> data,
+  ) {
+    // ==========================================================
+    // INVENTORY
+    // ==========================================================
+
+    final inventory =
+        data['inventory'] is Map<String, dynamic>
+            ? data['inventory'] as Map<String, dynamic>
+            : <String, dynamic>{};
+
+    final totalStockValue =
+        inventory['total_stock'];
+
+    _totalStock = _formatNumber(totalStockValue);
+
+    // ==========================================================
+    // METRICS
+    // ==========================================================
+
+    final metrics =
+        data['metrics'] is Map<String, dynamic>
+            ? data['metrics'] as Map<String, dynamic>
+            : <String, dynamic>{};
+
+    _stockInToday =
+        _formatOptionalNumber(
+      metrics['stock_in_today'],
+    );
+
+    _stockOutToday =
+        _formatOptionalNumber(
+      metrics['stock_out_today'],
+    );
+
+    _availableBins =
+        _formatOptionalNumber(
+      metrics['available_bins'],
+    );
+
+    _pendingTasksCount =
+        _formatOptionalNumber(
+      metrics['pending_tasks'],
+    );
+
+    // ==========================================================
+    // INVENTORY OVERVIEW
+    // ==========================================================
+
+    final overview =
+        data['inventory_overview']
+                is Map<String, dynamic>
+            ? data['inventory_overview']
+                as Map<String, dynamic>
+            : <String, dynamic>{};
+
+    _inventoryProgress =
+        _calculateInventoryProgress(
+      overview,
+      totalStockValue,
+    );
+
+    _rawMaterials =
+        _formatOptionalNumber(
+      overview['raw_materials'],
+    );
+
+    _finishedGoods =
+        _formatOptionalNumber(
+      overview['finished_goods'],
+    );
+
+    _packaging =
+        _formatOptionalNumber(
+      overview['packaging'],
+    );
+
+    _consumables =
+        _formatOptionalNumber(
+      overview['consumables'],
+    );
+
+    _rawMaterialsPercentage =
+        _calculatePercentage(
+      overview['raw_materials'],
+      totalStockValue,
+    );
+
+    _finishedGoodsPercentage =
+        _calculatePercentage(
+      overview['finished_goods'],
+      totalStockValue,
+    );
+
+    _packagingPercentage =
+        _calculatePercentage(
+      overview['packaging'],
+      totalStockValue,
+    );
+
+    _consumablesPercentage =
+        _calculatePercentage(
+      overview['consumables'],
+      totalStockValue,
+    );
+
+    // ==========================================================
+    // WAREHOUSE UTILIZATION
+    // ==========================================================
+
+    final utilization =
+        data['warehouse_utilization']
+                is Map<String, dynamic>
+            ? data['warehouse_utilization']
+                as Map<String, dynamic>
+            : <String, dynamic>{};
+
+    _rackUtilization =
+        _parsePercentage(
+      utilization['rack_utilization'],
+    );
+
+    _binUtilization =
+        _parsePercentage(
+      utilization['bin_utilization'],
+    );
+
+    _levelUtilization =
+        _parsePercentage(
+      utilization['level_utilization'],
+    );
+
+    // ==========================================================
+// RECENT ACTIVITIES
+// ==========================================================
+
+final activities =
+    data['recent_activities'];
+
+if (activities is List) {
+  _recentActivitiesData = activities;
+} else {
+  _recentActivitiesData = [];
+}
+
+    // ==========================================================
+    // PENDING TASKS
+    // ==========================================================
+
+    final tasks =
+        data['pending_tasks'];
+
+    if (tasks is List) {
+      _pendingTasksData = tasks;
+    } else {
+      _pendingTasksData = [];
+    }
+  }
+
+  // ============================================================
+  // NUMBER FORMAT
+  // ============================================================
+
+  String _formatNumber(dynamic value) {
+    if (value == null) {
+      return '0';
+    }
+
+    if (value is num) {
+      if (value == value.roundToDouble()) {
+        return value
+            .toInt()
+            .toString();
+      }
+
+      return value
+          .toStringAsFixed(2)
+          .replaceAll(RegExp(r'\.?0+$'), '');
+    }
+
+    final parsed = double.tryParse(
+      value.toString(),
+    );
+
+    if (parsed == null) {
+      return '0';
+    }
+
+    if (parsed == parsed.roundToDouble()) {
+      return parsed
+          .toInt()
+          .toString();
+    }
+
+    return parsed
+        .toStringAsFixed(2)
+        .replaceAll(RegExp(r'\.?0+$'), '');
+  }
+
+  // ============================================================
+  // OPTIONAL NUMBER
+  // ============================================================
+
+  String _formatOptionalNumber(dynamic value) {
+    if (value == null) {
+      return '--';
+    }
+
+    return _formatNumber(value);
+  }
+
+  // ============================================================
+  // PERCENTAGE
+  // ============================================================
+
+  String _calculatePercentage(
+    dynamic value,
+    dynamic total,
+  ) {
+    if (value == null || total == null) {
+      return '--';
+    }
+
+    final valueNumber =
+        double.tryParse(value.toString());
+
+    final totalNumber =
+        double.tryParse(total.toString());
+
+    if (valueNumber == null ||
+        totalNumber == null ||
+        totalNumber <= 0) {
+      return '--';
+    }
+
+    final percentage =
+        (valueNumber / totalNumber) * 100;
+
+    return '${percentage.toStringAsFixed(1)}%';
+  }
+
+  // ============================================================
+  // INVENTORY PROGRESS
+  // ============================================================
+
+  double _calculateInventoryProgress(
+    Map<String, dynamic> overview,
+    dynamic total,
+  ) {
+    if (total == null) {
+      return 0;
+    }
+
+    final totalNumber =
+        double.tryParse(total.toString());
+
+    if (totalNumber == null ||
+        totalNumber <= 0) {
+      return 0;
+    }
+
+    double categoryTotal = 0;
+
+    final categories = [
+      overview['raw_materials'],
+      overview['finished_goods'],
+      overview['packaging'],
+      overview['consumables'],
+    ];
+
+    for (final category in categories) {
+      final value =
+          double.tryParse(
+        category?.toString() ?? '',
+      );
+
+      if (value != null) {
+        categoryTotal += value;
+      }
+    }
+
+    if (categoryTotal <= 0) {
+      return 0;
+    }
+
+    final progress =
+        categoryTotal / totalNumber;
+
+    if (progress > 1) {
+      return 1;
+    }
+
+    return progress;
+  }
+
+  // ============================================================
+  // PARSE UTILIZATION
+  // ============================================================
+
+  double? _parsePercentage(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+
+    if (value is num) {
+      final number = value.toDouble();
+
+      if (number > 1) {
+        return number / 100;
+      }
+
+      return number;
+    }
+
+    final text =
+        value.toString().trim();
+
+    if (text.isEmpty) {
+      return null;
+    }
+
+    final clean =
+        text.replaceAll('%', '');
+
+    final number =
+        double.tryParse(clean);
+
+    if (number == null) {
+      return null;
+    }
+
+    if (number > 1) {
+      return number / 100;
+    }
+
+    return number;
+  }
+
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+
+  void _logout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text(
+            'Are you sure you want to logout?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const LoginScreen(),
+                  ),
+                  (route) => false,
+                );
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F8FC),
+      body: Row(
+        children: [
+          // =====================================================
+          // SIDEBAR
+          // =====================================================
+
+          Container(
+            width: 235,
+            color: const Color(0xFF111827),
+            child: Column(
+              children: [
+                Container(
+                  height: 88,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ),
+                  child: Row(
+                    children: const [
+                      Icon(
+                        Icons.warehouse,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                      SizedBox(width: 11),
+                      Column(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'WMS',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 21,
+                              fontWeight:
+                                  FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Warehouse Management',
+                            style: TextStyle(
+                              color: Colors.white60,
+                              fontSize: 9,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Divider(
+                  color: Colors.white12,
+                ),
+
+                Expanded(
+                  child: ListView(
+                    padding:
+                        const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                    children: [
+                      _menuItem(
+                        Icons.dashboard_outlined,
+                        'Dashboard',
+                        true,
+                        context,
+                      ),
+                      _menuItem(
+                        Icons.inventory_2_outlined,
+                        'Inventory',
+                        false,
+                        context,
+                      ),
+                      _menuItem(
+                        Icons.download_outlined,
+                        'Inbound',
+                        false,
+                        context,
+                      ),
+                      _menuItem(
+                        Icons.upload_outlined,
+                        'Outbound',
+                        false,
+                        context,
+                      ),
+                      _menuItem(
+                        Icons.warehouse_outlined,
+                        'Warehouse',
+                        false,
+                        context,
+                      ),
+                      _menuItem(
+                        Icons.bar_chart_outlined,
+                        'Reports',
+                        false,
+                        context,
+                      ),
+                      _menuItem(
+                        Icons.people_outline,
+                        'User Management',
+                        false,
+                        context,
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      const Divider(
+                        color: Colors.white12,
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      _menuItem(
+                        Icons.notifications_none,
+                        'Notifications',
+                        false,
+                        context,
+                      ),
+                      _menuItem(
+                        Icons.settings_outlined,
+                        'Settings',
+                        false,
+                        context,
+                      ),
+                      _menuItem(
+                        Icons.person_outline,
+                        'Profile',
+                        false,
+                        context,
+                      ),
+                    ],
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: _menuItem(
+                    Icons.logout,
+                    'Logout',
+                    false,
+                    context,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // =====================================================
+          // MAIN CONTENT
+          // =====================================================
+
+          Expanded(
+            child: Column(
+              children: [
+                // =================================================
+                // TOP BAR
+                // =================================================
+
+                Container(
+                  height: 70,
+                  padding:
+                      const EdgeInsets.symmetric(
+                    horizontal: 28,
+                  ),
+                  decoration:
+                      const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      bottom: BorderSide(
+                        color:
+                            Color(0xFFE5E7EB),
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Dashboard',
+                        style: TextStyle(
+                          fontSize: 21,
+                          fontWeight:
+                              FontWeight.bold,
+                          color:
+                              Color(0xFF111827),
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      Container(
+                        width: 270,
+                        height: 40,
+                        decoration:
+                            BoxDecoration(
+                          color:
+                              const Color(
+                            0xFFF8FAFC,
+                          ),
+                          borderRadius:
+                              BorderRadius.circular(
+                            8,
+                          ),
+                          border: Border.all(
+                            color:
+                                const Color(
+                              0xFFE5E7EB,
+                            ),
+                          ),
+                        ),
+                        child: const TextField(
+                          decoration:
+                              InputDecoration(
+                            hintText:
+                                'Search...',
+                            prefixIcon:
+                                Icon(
+                              Icons.search,
+                              size: 19,
+                            ),
+                            border:
+                                InputBorder.none,
+                            contentPadding:
+                                EdgeInsets.only(
+                              top: 9,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 18),
+
+                      Stack(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationScreen(),
+                  ),
+                );
+              },
+                            icon: const Icon(
+                              Icons
+                                  .notifications_none,
+                              size: 24,
+                            ),
+                          ),
+                          Positioned(
+                            right: 5,
+                            top: 4,
+                            child: Container(
+                              width: 16,
+                              height: 16,
+                              decoration:
+                                  const BoxDecoration(
+                                color: Colors.red,
+                                shape:
+                                    BoxShape.circle,
+                              ),
+                              child:
+                                  const Center(
+                                child: Text(
+                                  '5',
+                                  style:
+                                      TextStyle(
+                                    color:
+                                        Colors.white,
+                                    fontSize: 9,
+                                    fontWeight:
+                                        FontWeight
+                                            .bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      const CircleAvatar(
+                        radius: 18,
+                        child: Icon(
+                          Icons.person,
+                          size: 20,
+                        ),
+                      ),
+
+                      const SizedBox(width: 9),
+
+                      const Text(
+                        'Administrator',
+                        style: TextStyle(
+                          color:
+                              Color(0xFF374151),
+                          fontSize: 13,
+                          fontWeight:
+                              FontWeight.w600,
+                        ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      const Icon(
+                        Icons
+                            .keyboard_arrow_down,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+
+                // =================================================
+                // CONTENT
+                // =================================================
+
+                Expanded(
+                  child: _buildContent(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // CONTENT
+  // ============================================================
+
+  Widget _buildContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(26),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  "Here's what's happening in your warehouse today.",
+                  style: TextStyle(
+                    color: Color(0xFF6B7280),
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+
+              if (_isLoading)
+                const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child:
+                      CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
+                ),
+
+              if (!_isLoading &&
+                  _errorMessage != null)
+                IconButton(
+                  tooltip: 'Refresh dashboard',
+                  onPressed: _loadDashboard,
+                  icon: const Icon(
+                    Icons.refresh,
+                    size: 20,
+                  ),
+                ),
+            ],
+          ),
+
+          if (_errorMessage != null) ...[
+            const SizedBox(height: 10),
+
+            Container(
+              width: double.infinity,
+              padding:
+                  const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF1F2),
+                borderRadius:
+                    BorderRadius.circular(8),
+                border: Border.all(
+                  color:
+                      const Color(0xFFFECACA),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color:
+                        Color(0xFFDC2626),
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _errorMessage!,
+                      style: const TextStyle(
+                        color:
+                            Color(0xFFB91C1C),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          const SizedBox(height: 22),
+
+          // ======================================================
+          // KPI CARDS
+          // ======================================================
+
+          Row(
+            children: [
+              Expanded(
+                child: _statCard(
+                  title: 'Total Stock',
+                  value: _totalStock,
+                  subtitle: 'Items in stock',
+                  icon:
+                      Icons.inventory_2_outlined,
+                  iconBackground:
+                      const Color(0xFFE8F0FF),
+                ),
+              ),
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: _statCard(
+                  title: 'Stock In Today',
+                  value: _stockInToday,
+                  subtitle: 'Items received',
+                  icon:
+                      Icons.arrow_downward,
+                  iconBackground:
+                      const Color(0xFFE8F8EF),
+                ),
+              ),
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: _statCard(
+                  title: 'Stock Out Today',
+                  value: _stockOutToday,
+                  subtitle: 'Items dispatched',
+                  icon:
+                      Icons.arrow_upward,
+                  iconBackground:
+                      const Color(0xFFFFF1E4),
+                ),
+              ),
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: _statCard(
+                  title: 'Available Bins',
+                  value: _availableBins,
+                  subtitle: 'Bins available',
+                  icon: Icons.grid_view,
+                  iconBackground:
+                      const Color(0xFFEFF2FF),
+                ),
+              ),
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: _statCard(
+                  title: 'Pending Tasks',
+                  value: _pendingTasksCount,
+                  subtitle: 'Tasks pending',
+                  icon:
+                      Icons.assignment_outlined,
+                  iconBackground:
+                      const Color(0xFFF3EFFF),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // ======================================================
+          // MIDDLE
+          // ======================================================
+
+          Row(
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _inventoryOverview(),
+              ),
+              const SizedBox(width: 18),
+              Expanded(
+                child: _warehouseUtilization(),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // ======================================================
+          // BOTTOM
+          // ======================================================
+
+          Row(
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _recentActivities(),
+              ),
+              const SizedBox(width: 18),
+              Expanded(
+                child: _pendingTasks(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // SIDEBAR MENU
+  // ============================================================
+
+  Widget _menuItem(
+    IconData icon,
+    String title,
+    bool selected,
+    BuildContext context,
+  ) {
+    return Container(
+      margin:
+          const EdgeInsets.only(bottom: 5),
+      decoration: BoxDecoration(
+        color: selected
+            ? const Color(0xFF3B82F6)
+            : Colors.transparent,
+        borderRadius:
+            BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        dense: true,
+        leading: Icon(
+          icon,
+          color: Colors.white,
+          size: 20,
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+          ),
+        ),
+        onTap: () {
+          if (title == 'Logout') {
+            _logout(context);
+          } else if (title == 'Inventory') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const InventoryScreen(),
+              ),
+            );
+          } else if (title == 'Inbound') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const InboundScreen(),
+              ),
+            );
+          } else if (title == 'Outbound') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const OutboundScreen(),
+              ),
+            );
+          } else if (title == 'Warehouse') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const WarehouseScreen(),
+              ),
+            );
+          } else if (title == 'Reports') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ReportsScreen(),
+              ),
+            );
+          } else if (title == 'User Management') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const UserManagementScreen(),
+              ),
+            );
+          } else if (title == 'Dashboard') {
+            // Already on Dashboard.
+          } else {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(
+              SnackBar(
+                content: Text(
+                  '$title module is not implemented yet.',
+                ),
+                duration:
+                    const Duration(seconds: 2),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  // ============================================================
+  // STAT CARD
+  // ============================================================
+
+  Widget _statCard({
+    required String title,
+    required String value,
+    required String subtitle,
+    required IconData icon,
+    required Color iconBackground,
+  }) {
+    return InkWell(
+      onTap: title == 'Total Stock'
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const InventoryScreen(),
+                ),
+              );
+            }
+          : title == 'Stock In Today'
+              ? () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const InboundScreen(),
+                    ),
+                  );
+                }
+              : null,
+      child: Container(
+      height: 155,
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+            BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xFFE5E7EB),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration:
+                    BoxDecoration(
+                  color: iconBackground,
+                  borderRadius:
+                      BorderRadius.circular(9),
+                ),
+                child: Icon(
+                  icon,
+                  color:
+                      const Color(0xFF2563EB),
+                  size: 21,
+                ),
+              ),
+              const Spacer(),
+              const Icon(
+                Icons.more_horiz,
+                color: Colors.grey,
+                size: 19,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 11,
+              color:
+                  Color(0xFF6B7280),
+            ),
+          ),
+
+          const SizedBox(height: 3),
+
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 23,
+              height: 1.1,
+              fontWeight:
+                  FontWeight.bold,
+              color:
+                  Color(0xFF111827),
+            ),
+          ),
+
+          const SizedBox(height: 3),
+
+          Text(
+            subtitle,
+            style: const TextStyle(
+              fontSize: 10,
+              color:
+                  Color(0xFF9CA3AF),
+            ),
+          ),
+        ],
+      ),
+    ),
+    );
+  }
+
+  // ============================================================
+  // INVENTORY OVERVIEW
+  // ============================================================
+
+  Widget _inventoryOverview() {
+    return _panel(
+      title: 'Inventory Overview',
+      action: 'View All',
+      child: Column(
+        children: [
+          const SizedBox(height: 15),
+
+          Row(
+            children: [
+              SizedBox(
+                width: 150,
+                height: 150,
+                child: Stack(
+                  alignment:
+                      Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 140,
+                      height: 140,
+                      child:
+                          CircularProgressIndicator(
+                        value:
+                            _inventoryProgress,
+                        strokeWidth: 27,
+                        backgroundColor:
+                            const Color(
+                          0xFFE5E7EB,
+                        ),
+                        color:
+                            const Color(
+                          0xFF3B82F6,
+                        ),
+                      ),
+                    ),
+
+                    Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment
+                              .center,
+                      children: [
+                        Text(
+                          _totalStock,
+                          style:
+                              const TextStyle(
+                            fontSize: 23,
+                            fontWeight:
+                                FontWeight
+                                    .bold,
+                          ),
+                        ),
+                        const Text(
+                          'Total Stock',
+                          style:
+                              TextStyle(
+                            fontSize: 10,
+                            color:
+                                Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 25),
+
+              Expanded(
+                child: Column(
+                  children: [
+                    _inventoryRow(
+                      'Raw Materials',
+                      _rawMaterials,
+                      _rawMaterialsPercentage,
+                      const Color(
+                        0xFF3B82F6,
+                      ),
+                    ),
+                    _inventoryRow(
+                      'Finished Goods',
+                      _finishedGoods,
+                      _finishedGoodsPercentage,
+                      const Color(
+                        0xFF22C55E,
+                      ),
+                    ),
+                    _inventoryRow(
+                      'Packaging',
+                      _packaging,
+                      _packagingPercentage,
+                      const Color(
+                        0xFFF59E0B,
+                      ),
+                    ),
+                    _inventoryRow(
+                      'Consumables',
+                      _consumables,
+                      _consumablesPercentage,
+                      const Color(
+                        0xFF8B5CF6,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 15),
+
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ReportsScreen(),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(7),
+            child: Container(
+              padding:
+                  const EdgeInsets.all(11),
+              decoration: BoxDecoration(
+                color:
+                    const Color(0xFFF0F6FF),
+                borderRadius:
+                    BorderRadius.circular(7),
+              ),
+              child: const Row(
+              children: [
+                Icon(
+                  Icons.assessment_outlined,
+                  size: 17,
+                  color:
+                      Color(0xFF2563EB),
+                ),
+                SizedBox(width: 7),
+                Text(
+                  'View Full Inventory Report',
+                  style: TextStyle(
+                    color:
+                        Color(0xFF2563EB),
+                    fontWeight:
+                        FontWeight.w600,
+                    fontSize: 11,
+                  ),
+                ),
+                Spacer(),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 11,
+                  color:
+                      Color(0xFF2563EB),
+                ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _inventoryRow(
+    String name,
+    String value,
+    String percentage,
+    Color color,
+  ) {
+    return Padding(
+      padding:
+          const EdgeInsets.only(
+        bottom: 15,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration:
+                BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Text(
+              name,
+              style:
+                  const TextStyle(
+                fontSize: 11,
+              ),
+            ),
+          ),
+          Text(
+            value,
+            style:
+                const TextStyle(
+              fontWeight:
+                  FontWeight.bold,
+              fontSize: 11,
+            ),
+          ),
+          const SizedBox(width: 7),
+          Text(
+            '($percentage)',
+            style:
+                const TextStyle(
+              color: Colors.grey,
+              fontSize: 10,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // WAREHOUSE UTILIZATION
+  // ============================================================
+
+  Widget _warehouseUtilization() {
+    return _panel(
+      title: 'Warehouse Utilization',
+      child: Column(
+        children: [
+          const SizedBox(height: 14),
+
+          _utilizationRow(
+            'Rack Utilization',
+            _rackUtilization,
+            Icons.warehouse_outlined,
+          ),
+
+          _utilizationRow(
+            'Bin Utilization',
+            _binUtilization,
+            Icons.grid_view,
+          ),
+
+          _utilizationRow(
+            'Level Utilization',
+            _levelUtilization,
+            Icons.layers_outlined,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _utilizationRow(
+    String title,
+    double? value,
+    IconData icon,
+  ) {
+    final hasValue = value != null;
+
+    final safeValue = hasValue
+        ? value.clamp(0.0, 1.0)
+        : 0.0;
+
+    final percentage = hasValue
+        ? '${(safeValue * 100).toStringAsFixed(0)}%'
+        : '--';
+
+    final detail = hasValue
+        ? 'Data available'
+        : 'Data not available';
+
+    final color =
+        const Color(0xFF3B82F6);
+
+    return Padding(
+      padding:
+          const EdgeInsets.only(
+        bottom: 19,
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 37,
+                height: 37,
+                decoration:
+                    BoxDecoration(
+                  color:
+                      color.withOpacity(
+                    0.10,
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(
+                    8,
+                  ),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 19,
+                ),
+              ),
+
+              const SizedBox(width: 11),
+
+              Expanded(
+                child: Text(
+                  title,
+                  style:
+                      const TextStyle(
+                    fontWeight:
+                        FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+
+              Text(
+                percentage,
+                style:
+                    const TextStyle(
+                  fontWeight:
+                      FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          Row(
+            children: [
+              Expanded(
+                child:
+                    LinearProgressIndicator(
+                  value: safeValue,
+                  minHeight: 6,
+                  borderRadius:
+                      BorderRadius.circular(
+                    10,
+                  ),
+                  backgroundColor:
+                      const Color(
+                    0xFFE5E7EB,
+                  ),
+                  color: color,
+                ),
+              ),
+
+              const SizedBox(width: 9),
+
+              SizedBox(
+                width: 82,
+                child: Text(
+                  detail,
+                  style:
+                      const TextStyle(
+                    fontSize: 9,
+                    color: Colors.grey,
+                  ),
+                  textAlign:
+                      TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // RECENT ACTIVITIES
+  // ============================================================
+
+  Widget _recentActivities() {
+    return _panel(
+      title: 'Recent Activities',
+      action: 'View All',
+      child: _recentActivitiesData.isEmpty
+          ? _emptyState(
+              'No recent activities available.',
+            )
+          : Column(
+              children:
+                  _recentActivitiesData.map(
+                (activity) {
+                  final item =
+                      activity is Map
+                          ? Map<String,
+                              dynamic>.from(
+                              activity,
+                            )
+                          : <String,
+                              dynamic>{};
+
+                  return _activity(
+                    Icons
+                        .check_circle_outline,
+                    item['title']
+                            ?.toString() ??
+                        'Activity',
+                    item['subtitle']
+                            ?.toString() ??
+                        '',
+                    item['time']
+                            ?.toString() ??
+                        '',
+                  );
+                },
+              ).toList(),
+            ),
+    );
+  }
+
+  Widget _activity(
+    IconData icon,
+    String title,
+    String subtitle,
+    String time,
+  ) {
+    return Container(
+      padding:
+          const EdgeInsets.symmetric(
+        vertical: 10,
+      ),
+      decoration:
+          const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color:
+                Color(0xFFF0F0F0),
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 16,
+            child: Icon(
+              icon,
+              size: 16,
+            ),
+          ),
+
+          const SizedBox(width: 10),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment
+                      .start,
+              children: [
+                Text(
+                  title,
+                  style:
+                      const TextStyle(
+                    fontWeight:
+                        FontWeight.w600,
+                    fontSize: 11,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style:
+                      const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 9,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Container(
+            padding:
+                const EdgeInsets
+                    .symmetric(
+              horizontal: 7,
+              vertical: 3,
+            ),
+            decoration:
+                BoxDecoration(
+              color:
+                  const Color(
+                0xFFEAF8EF,
+              ),
+              borderRadius:
+                  BorderRadius.circular(
+                10,
+              ),
+            ),
+            child: const Text(
+              'Completed',
+              style: TextStyle(
+                color:
+                    Color(0xFF16A34A),
+                fontSize: 8,
+                fontWeight:
+                    FontWeight.w600,
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 10),
+
+          Text(
+            time,
+            style:
+                const TextStyle(
+              color: Colors.grey,
+              fontSize: 9,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // PENDING TASKS
+  // ============================================================
+
+  Widget _pendingTasks() {
+    return _panel(
+      title: 'Pending Tasks',
+      action: 'View All',
+      child: _pendingTasksData.isEmpty
+          ? _emptyState(
+              'No pending tasks available.',
+            )
+          : Column(
+              children:
+                  _pendingTasksData.map(
+                (task) {
+                  final item =
+                      task is Map
+                          ? Map<String,
+                              dynamic>.from(
+                              task,
+                            )
+                          : <String,
+                              dynamic>{};
+
+                  return _task(
+                    Icons
+                        .assignment_outlined,
+                    item['title']
+                            ?.toString() ??
+                        'Task',
+                    item['subtitle']
+                            ?.toString() ??
+                        '',
+                    item['priority']
+                            ?.toString() ??
+                        'Low',
+                    item['time']
+                            ?.toString() ??
+                        '',
+                  );
+                },
+              ).toList(),
+            ),
+    );
+  }
+
+  Widget _task(
+    IconData icon,
+    String title,
+    String subtitle,
+    String priority,
+    String time,
+  ) {
+    Color priorityColor;
+
+    if (priority == 'High') {
+      priorityColor = Colors.red;
+    } else if (priority == 'Medium') {
+      priorityColor = Colors.orange;
+    } else {
+      priorityColor = Colors.blue;
+    }
+
+    return Container(
+      padding:
+          const EdgeInsets.symmetric(
+        vertical: 10,
+      ),
+      decoration:
+          const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color:
+                Color(0xFFF0F0F0),
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 16,
+            child: Icon(
+              icon,
+              size: 16,
+            ),
+          ),
+
+          const SizedBox(width: 10),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment
+                      .start,
+              children: [
+                Text(
+                  title,
+                  style:
+                      const TextStyle(
+                    fontWeight:
+                        FontWeight.w600,
+                    fontSize: 11,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style:
+                      const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 9,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Container(
+            padding:
+                const EdgeInsets
+                    .symmetric(
+              horizontal: 8,
+              vertical: 3,
+            ),
+            decoration:
+                BoxDecoration(
+              color:
+                  priorityColor
+                      .withOpacity(
+                0.10,
+              ),
+              borderRadius:
+                  BorderRadius.circular(
+                10,
+              ),
+            ),
+            child: Text(
+              priority,
+              style: TextStyle(
+                color: priorityColor,
+                fontSize: 8,
+                fontWeight:
+                    FontWeight.w600,
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 10),
+
+          Text(
+            time,
+            style:
+                const TextStyle(
+              color: Colors.grey,
+              fontSize: 9,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // EMPTY STATE
+  // ============================================================
+
+  Widget _emptyState(String message) {
+    return Padding(
+      padding:
+          const EdgeInsets.symmetric(
+        vertical: 35,
+      ),
+      child: Center(
+        child: Text(
+          message,
+          style:
+              const TextStyle(
+            color: Colors.grey,
+            fontSize: 11,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // COMMON PANEL
+  // ============================================================
+
+  Widget _panel({
+    required String title,
+    required Widget child,
+    String? action,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration:
+          BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+            BorderRadius.circular(10),
+        border: Border.all(
+          color:
+              const Color(0xFFE5E7EB),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .start,
+        children: [
+          Row(
+            children: [
+              Text(
+                title,
+                style:
+                    const TextStyle(
+                  fontSize: 15,
+                  fontWeight:
+                      FontWeight.bold,
+                ),
+              ),
+
+              const Spacer(),
+
+              if (action != null)
+                Text(
+                  action,
+                  style:
+                      const TextStyle(
+                    color:
+                        Color(0xFF2563EB),
+                    fontSize: 11,
+                    fontWeight:
+                        FontWeight.w600,
+                  ),
+                ),
+            ],
+          ),
+
+          const SizedBox(height: 3),
+
+          child,
+        ],
+      ),
+    );
+  }
+}

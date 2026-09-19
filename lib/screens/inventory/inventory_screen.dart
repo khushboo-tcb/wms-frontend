@@ -1,0 +1,1573 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import '../../main.dart';
+
+import '../dashboard/dashboard_screen.dart';
+import '../inbound/inbound_screen.dart';
+import '../outbound/outbound_screen.dart';
+import '../warehouse/warehouse_screen.dart';
+import '../reports/reports_screen.dart';
+import '../notification/notification_screen.dart';
+import '../settings/settings_screen.dart';
+import '../profile/profile_screen.dart';
+
+class InventoryScreen extends StatefulWidget {
+  const InventoryScreen({super.key});
+
+  @override
+  State<InventoryScreen> createState() => _InventoryScreenState();
+}
+
+class _InventoryScreenState extends State<InventoryScreen> {
+
+  // ============================================================
+  // API
+  // ============================================================
+
+  final String apiUrl =
+      'http://127.0.0.1:8001/bin-stock/';
+
+  List<dynamic> binStockData = [];
+
+  bool isLoading = false;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBinStock();
+  }
+
+  // ============================================================
+  // FETCH BIN STOCK
+  // ============================================================
+
+  Future<void> _fetchBinStock() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer ${AppSession.token}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        print('Bin Stock API Response: $responseData');
+
+        if (responseData['success'] == true &&
+            responseData['data'] != null) {
+          final responseDataValue = responseData['data'];
+
+          final data = responseDataValue is Map
+              ? responseDataValue['data']
+              : responseDataValue;
+
+          setState(() {
+            binStockData = data is List ? data : [];
+          });
+        } else {
+          setState(() {
+            binStockData = [];
+          });
+        }
+      } else {
+        print(
+          'Bin Stock API failed: ${response.statusCode}',
+        );
+
+        print(response.body);
+
+        setState(() {
+          binStockData = [];
+        });
+      }
+    } catch (e) {
+      print('Bin Stock API Error: $e');
+
+      setState(() {
+        binStockData = [];
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+
+  void _logout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text(
+            'Are you sure you want to logout?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                  (route) => false,
+                );
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // NAVIGATION
+  // ============================================================
+
+  void _navigateToModule(
+    BuildContext context,
+    String title,
+  ) {
+    if (title == 'Dashboard') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
+    }
+
+    else if (title == 'Inventory') {
+      // Already on Inventory
+    }
+
+    else if (title == 'Inbound') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const InboundScreen(),
+        ),
+      );
+    }
+
+    else if (title == 'Outbound') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const OutboundScreen(),
+        ),
+      );
+    }
+
+    else if (title == 'Warehouse') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const WarehouseScreen(),
+        ),
+      );
+    }
+
+    else if (title == 'Reports') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ReportsScreen(),
+        ),
+      );
+    }
+
+    else if (title == 'Notifications') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const NotificationScreen(),
+        ),
+      );
+    }
+
+    else if (title == 'Settings') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SettingsScreen(),
+        ),
+      );
+    }
+
+    else if (title == 'Profile') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ProfileScreen(),
+        ),
+      );
+    }
+
+    else if (title == 'Logout') {
+      _logout(context);
+    }
+
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '$title module is not implemented yet.',
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F8FC),
+      body: Row(
+        children: [
+
+          // =====================================================
+          // SIDEBAR
+          // =====================================================
+
+          SizedBox(
+            width: 235,
+            child: Container(
+              color: const Color(0xFF111827),
+              child: Column(
+                children: [
+
+                  // ================= WMS LOGO =================
+
+                  Container(
+                    height: 88,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                    ),
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.warehouse,
+                          color: Colors.white,
+                          size: 32,
+                        ),
+
+                        SizedBox(width: 11),
+
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'WMS',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 21,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                              Text(
+                                'Warehouse Management',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 9,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Divider(
+                    color: Colors.white12,
+                  ),
+
+                  // ================= SIDEBAR MENU =================
+
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
+                      children: [
+
+                        _menuItem(
+                          Icons.dashboard_outlined,
+                          'Dashboard',
+                          false,
+                          context,
+                        ),
+
+                        _menuItem(
+                          Icons.inventory_2_outlined,
+                          'Inventory',
+                          true,
+                          context,
+                        ),
+
+                        _menuItem(
+                          Icons.download_outlined,
+                          'Inbound',
+                          false,
+                          context,
+                        ),
+
+                        _menuItem(
+                          Icons.upload_outlined,
+                          'Outbound',
+                          false,
+                          context,
+                        ),
+
+                        _menuItem(
+                          Icons.warehouse_outlined,
+                          'Warehouse',
+                          false,
+                          context,
+                        ),
+
+                        _menuItem(
+                          Icons.bar_chart_outlined,
+                          'Reports',
+                          false,
+                          context,
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        const Divider(
+                          color: Colors.white12,
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        _menuItem(
+                          Icons.notifications_none,
+                          'Notifications',
+                          false,
+                          context,
+                        ),
+
+                        _menuItem(
+                          Icons.settings_outlined,
+                          'Settings',
+                          false,
+                          context,
+                        ),
+
+                        _menuItem(
+                          Icons.person_outline,
+                          'Profile',
+                          false,
+                          context,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // ================= LOGOUT =================
+
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: _menuItem(
+                      Icons.logout,
+                      'Logout',
+                      false,
+                      context,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // =====================================================
+          // MAIN AREA
+          // =====================================================
+
+          Expanded(
+            child: Column(
+              children: [
+
+                // =================================================
+                // TOP BAR
+                // =================================================
+
+                Container(
+                  height: 70,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Color(0xFFE5E7EB),
+                      ),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      height: 70,
+                      width: 650,
+                      child: Row(
+                        children: [
+
+                          const Text(
+                            'Inventory',
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF111827),
+                            ),
+                          ),
+
+                          const Spacer(),
+
+                          // ================= SEARCH =================
+
+                          Container(
+                            width: 270,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
+                              borderRadius:
+                                  BorderRadius.circular(8),
+                              border: Border.all(
+                                color: const Color(0xFFE5E7EB),
+                              ),
+                            ),
+                            child: TextField(
+                              onSubmitted: (value) {
+                                if (value.isNotEmpty) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Searching for "$value"',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                hintText: 'Search...',
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  size: 19,
+                                ),
+                                border: InputBorder.none,
+                                contentPadding:
+                                    EdgeInsets.only(top: 9),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 18),
+
+                          // ================= NOTIFICATION =================
+
+                          Stack(
+                            children: [
+
+                              IconButton(
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'You have 5 notifications.',
+                                      ),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.notifications_none,
+                                  size: 24,
+                                ),
+                              ),
+
+                              Positioned(
+                                right: 5,
+                                top: 4,
+                                child: Container(
+                                  width: 16,
+                                  height: 16,
+                                  decoration:
+                                      const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      '5',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 9,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(width: 8),
+
+                          // ================= PROFILE =================
+
+                          InkWell(
+                            borderRadius:
+                                BorderRadius.circular(20),
+                            onTap: () {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Profile clicked.',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const CircleAvatar(
+                              radius: 18,
+                              child: Icon(
+                                Icons.person,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 9),
+
+                          const Text(
+                            'Administrator',
+                            style: TextStyle(
+                              color: Color(0xFF374151),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+
+                          const SizedBox(width: 12),
+
+                          const Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // =================================================
+                // CONTENT
+                // =================================================
+
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(26),
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+
+                          const Text(
+                            'Inventory Management',
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF111827),
+                            ),
+                          ),
+
+                          const SizedBox(height: 5),
+
+                          const Text(
+                            'Monitor and manage inventory across warehouses, locations and stock levels.',
+                            style: TextStyle(
+                              color: Color(0xFF6B7280),
+                              fontSize: 13,
+                            ),
+                          ),
+
+                          const SizedBox(height: 22),
+
+                          // =================================================
+                          // KPI CARDS
+                          // =================================================
+
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+
+                                SizedBox(
+                                  width: 230,
+                                  child: _statCard(
+                                    title: 'Total Items',
+                                    value: _totalItems.toString(),
+                                    subtitle:
+                                        'Items in inventory',
+                                    icon:
+                                        Icons.inventory_2_outlined,
+                                    iconBackground:
+                                        const Color(0xFFE8F0FF),
+                                    onTap: () {
+                                      print('TOTAL ITEMS KPI TAPPED');
+                                      _showMessage(
+                                        context,
+                                        'Total Items: $_totalItems',
+                                      );
+                                    },
+                                  ),
+                                ),
+
+                                const SizedBox(width: 14),
+
+                                SizedBox(
+                                  width: 230,
+                                  child: _statCard(
+                                    title: 'Available Stock',
+                                    value: _formatNumber(_availableStock),
+                                    subtitle:
+                                        'Items available',
+                                    icon:
+                                        Icons.check_circle_outline,
+                                    iconBackground:
+                                        const Color(0xFFE8F8EF),
+                                    onTap: () {
+                                      _showMessage(
+                                        context,
+                                        'Available Stock: ${_formatNumber(_availableStock)}',
+                                      );
+                                    },
+                                  ),
+                                ),
+
+                                const SizedBox(width: 14),
+
+                                SizedBox(
+                                  width: 230,
+                                  child: _statCard(
+                                    title: 'Low Stock',
+                                    value: _lowStock.toString(),
+                                    subtitle:
+                                        'Items need attention',
+                                    icon:
+                                        Icons.warning_amber_outlined,
+                                    iconBackground:
+                                        const Color(0xFFFFF1E4),
+                                    onTap: () {
+                                      _showMessage(
+                                        context,
+                                        'Low Stock Items: $_lowStock',
+                                      );
+                                    },
+                                  ),
+                                ),
+
+                                const SizedBox(width: 14),
+
+                                SizedBox(
+                                  width: 230,
+                                  child: _statCard(
+                                    title: 'Out of Stock',
+                                    value: _outOfStock.toString(),
+                                    subtitle:
+                                        'Items unavailable',
+                                    icon:
+                                        Icons.remove_circle_outline,
+                                    iconBackground:
+                                        const Color(0xFFFFEAEA),
+                                    onTap: () {
+                                      _showMessage(
+                                        context,
+                                        'Out of Stock Items: $_outOfStock',
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // =================================================
+                          // FILTER PANEL
+                          // =================================================
+
+                          _panel(
+                            title: 'Inventory Filters',
+                            child: SingleChildScrollView(
+                              scrollDirection:
+                                  Axis.horizontal,
+                              child: Row(
+                                children: [
+
+                                  const SizedBox(height: 14),
+
+                                  _filterField(
+                                    context,
+                                    'Warehouse',
+                                    Icons.warehouse_outlined,
+                                  ),
+
+                                  const SizedBox(width: 12),
+
+                                  _filterField(
+                                    context,
+                                    'Item Group',
+                                    Icons.category_outlined,
+                                  ),
+
+                                  const SizedBox(width: 12),
+
+                                  _filterField(
+                                    context,
+                                    'Stock Status',
+                                    Icons.inventory_outlined,
+                                  ),
+
+                                  const SizedBox(width: 12),
+
+                                  _filterField(
+                                    context,
+                                    'Storage Location',
+                                    Icons.grid_view,
+                                  ),
+
+                                  const SizedBox(width: 12),
+
+                                  SizedBox(
+                                    height: 43,
+                                    child:
+                                        ElevatedButton.icon(
+                                      onPressed: () {
+                                        _showMessage(
+                                          context,
+                                          'Inventory filters applied.',
+                                        );
+                                      },
+                                      icon: const Icon(
+                                        Icons.search,
+                                        size: 17,
+                                      ),
+                                      label: const Text(
+                                        'Apply',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // =================================================
+                          // INVENTORY STOCK TABLE
+                          // =================================================
+
+                          _panel(
+                            title: 'Inventory Stock',
+                            action: 'Refresh',
+                            actionOnTap: _fetchBinStock,
+                            child: SingleChildScrollView(
+                              scrollDirection:
+                                  Axis.horizontal,
+                              child: SizedBox(
+                                width: 850,
+                                child: Column(
+                                  children: [
+
+                                    const SizedBox(height: 15),
+
+                                    // ================= TABLE HEADER =================
+
+                                    Container(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 12,
+                                      ),
+                                      decoration:
+                                          const BoxDecoration(
+                                        color: Color(0xFFF8FAFC),
+                                        borderRadius:
+                                            BorderRadius.vertical(
+                                          top: Radius.circular(7),
+                                        ),
+                                      ),
+                                      child: const Row(
+                                        children: [
+
+                                          Expanded(
+                                            flex: 2,
+                                            child: Text(
+                                              'Item',
+                                              style:
+                                                  _tableHeaderStyle,
+                                            ),
+                                          ),
+
+                                          Expanded(
+                                            child: Text(
+                                              'Warehouse',
+                                              style:
+                                                  _tableHeaderStyle,
+                                            ),
+                                          ),
+
+                                          Expanded(
+                                            child: Text(
+                                              'Location',
+                                              style:
+                                                  _tableHeaderStyle,
+                                            ),
+                                          ),
+
+                                          Expanded(
+                                            child: Text(
+                                              'Quantity',
+                                              style:
+                                                  _tableHeaderStyle,
+                                            ),
+                                          ),
+
+                                          Expanded(
+                                            child: Text(
+                                              'Status',
+                                              style:
+                                                  _tableHeaderStyle,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // ================= LOADING =================
+
+                                    if (isLoading)
+                                      const Padding(
+                                        padding:
+                                            EdgeInsets.all(30),
+                                        child:
+                                            CircularProgressIndicator(),
+                                      )
+
+                                    // ================= EMPTY =================
+
+                                    else if (binStockData.isEmpty)
+                                      const Padding(
+                                        padding:
+                                            EdgeInsets.all(30),
+                                        child: Text(
+                                          'No inventory stock found.',
+                                          style: TextStyle(
+                                            color:
+                                                Color(0xFF6B7280),
+                                          ),
+                                        ),
+                                      )
+
+                                    // ================= API DATA =================
+
+                                    else
+                                      ...binStockData.map(
+                                        (stock) {
+
+                                          final item =
+                                              stock['item']
+                                                      ?.toString() ??
+                                                  '-';
+
+                                          final warehouse =
+                                              stock['warehouse']
+                                                      ?.toString() ??
+                                                  '-';
+
+                                          final rack =
+                                              stock['rack']
+                                                      ?.toString() ??
+                                                  '-';
+
+                                          final level =
+                                              stock['level']
+                                                      ?.toString() ??
+                                                  '-';
+
+                                          final bin =
+                                              stock['bin']
+                                                      ?.toString() ??
+                                                  '-';
+
+                                          final quantity =
+                                              stock['quantity']
+                                                      ?.toString() ??
+                                                  '0';
+
+                                          final storageLocation =
+                                              stock['storage_location']
+                                                      ?.toString() ??
+                                                  '-';
+
+                                          final status =
+                                              _getStockStatus(
+                                            stock['quantity'],
+                                          );
+
+                                          return _stockRow(
+                                            context,
+                                            item,
+                                            'Bin Stock',
+                                            warehouse,
+                                            'Rack: $rack / Level: $level / Bin: $bin / Location: $storageLocation',
+                                            quantity,
+                                            status,
+                                          );
+                                        },
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  int get _totalItems {
+    return binStockData
+        .map((stock) => stock['item']?.toString())
+        .where((item) => item != null && item.isNotEmpty)
+        .toSet()
+        .length;
+  }
+
+  double get _availableStock {
+    return binStockData.fold<double>(
+      0,
+      (total, stock) {
+        final value = stock['available_quantity'];
+
+        if (value is num) {
+          return total + value.toDouble();
+        }
+
+        return total +
+            (double.tryParse(value?.toString() ?? '0') ?? 0);
+      },
+    );
+  }
+
+  int get _lowStock {
+    return binStockData.where((stock) {
+      final value = stock['quantity'];
+
+      final quantity = value is num
+          ? value.toDouble()
+          : double.tryParse(value?.toString() ?? '0') ?? 0;
+
+      return quantity > 0 && quantity <= 100;
+    }).length;
+  }
+
+  int get _outOfStock {
+    return binStockData.where((stock) {
+      final value = stock['quantity'];
+
+      final quantity = value is num
+          ? value.toDouble()
+          : double.tryParse(value?.toString() ?? '0') ?? 0;
+
+      return quantity <= 0;
+    }).length;
+  }
+
+  String _formatNumber(num value) {
+    if (value % 1 == 0) {
+      return value.toInt().toString();
+    }
+
+    return value.toStringAsFixed(2);
+  }
+
+  // ============================================================
+  // STOCK STATUS
+  // ============================================================
+
+  String _getStockStatus(dynamic quantity) {
+    double value = 0;
+
+    if (quantity is num) {
+      value = quantity.toDouble();
+    } else {
+      value = double.tryParse(
+            quantity?.toString() ?? '0',
+          ) ??
+          0;
+    }
+
+    if (value <= 0) {
+      return 'Out of Stock';
+    }
+
+    if (value <= 100) {
+      return 'Low Stock';
+    }
+
+    return 'Available';
+  }
+
+  // ============================================================
+  // SIDEBAR MENU
+  // ============================================================
+
+  Widget _menuItem(
+    IconData icon,
+    String title,
+    bool selected,
+    BuildContext context,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 5),
+      decoration: BoxDecoration(
+        color: selected
+            ? const Color(0xFF3B82F6)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        dense: true,
+        leading: Icon(
+          icon,
+          color: Colors.white,
+          size: 20,
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+          ),
+        ),
+        onTap: () {
+          _navigateToModule(
+            context,
+            title,
+          );
+        },
+      ),
+    );
+  }
+
+  // ============================================================
+  // STAT CARD
+  // ============================================================
+
+  Widget _statCard({
+    required String title,
+    required String value,
+    required String subtitle,
+    required IconData icon,
+    required Color iconBackground,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: Container(
+        height: 145,
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+              BorderRadius.circular(10),
+          border: Border.all(
+            color: const Color(0xFFE5E7EB),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+          children: [
+
+            Row(
+              children: [
+
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: iconBackground,
+                    borderRadius:
+                        BorderRadius.circular(9),
+                  ),
+                  child: Icon(
+                    icon,
+                    color:
+                        const Color(0xFF2563EB),
+                    size: 21,
+                  ),
+                ),
+
+                const Spacer(),
+
+                const Icon(
+                  Icons.more_horiz,
+                  color: Colors.grey,
+                  size: 19,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 9),
+
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 11,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+
+            const SizedBox(height: 3),
+
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 23,
+                height: 1.1,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF111827),
+              ),
+            ),
+
+            const SizedBox(height: 3),
+
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 10,
+                color: Color(0xFF9CA3AF),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // FILTER FIELD
+  // ============================================================
+
+  Widget _filterField(
+    BuildContext context,
+    String title,
+    IconData icon,
+  ) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: () {
+        _showMessage(
+          context,
+          '$title filter selected.',
+        );
+      },
+      child: Container(
+        width: 180,
+        height: 43,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+        ),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius:
+              BorderRadius.circular(8),
+          border: Border.all(
+            color: const Color(0xFFE5E7EB),
+          ),
+        ),
+        child: Row(
+          children: [
+
+            Icon(
+              icon,
+              size: 17,
+              color: const Color(0xFF6B7280),
+            ),
+
+            const SizedBox(width: 8),
+
+            Expanded(
+              child: Text(
+                title,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: Color(0xFF6B7280),
+                ),
+              ),
+            ),
+
+            const Icon(
+              Icons.keyboard_arrow_down,
+              size: 17,
+              color: Color(0xFF6B7280),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // STOCK ROW
+  // ============================================================
+
+  Widget _stockRow(
+    BuildContext context,
+    String itemCode,
+    String itemGroup,
+    String warehouse,
+    String location,
+    String quantity,
+    String status,
+  ) {
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(itemCode),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+
+                    Text(
+                      'Item Group: $itemGroup',
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Text(
+                      'Warehouse: $warehouse',
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Text(
+                      'Location: $location',
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Text(
+                      'Quantity: $quantity',
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Text(
+                      'Status: $status',
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
+        decoration: const BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: Color(0xFFF0F0F0),
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+
+                  Text(
+                    itemCode,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF111827),
+                    ),
+                  ),
+
+                  const SizedBox(height: 3),
+
+                  Text(
+                    itemGroup,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 9,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: Text(
+                warehouse,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 10,
+                ),
+              ),
+            ),
+
+            Expanded(
+              child: Text(
+                location,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 9,
+                  color: Color(0xFF6B7280),
+                ),
+              ),
+            ),
+
+            Expanded(
+              child: Text(
+                quantity,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            Expanded(
+              child: _statusBadge(status),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // STATUS BADGE
+  // ============================================================
+
+  Widget _statusBadge(String status) {
+    Color color;
+
+    if (status == 'Available') {
+      color = Colors.green;
+    } else if (status == 'Low Stock') {
+      color = Colors.orange;
+    } else {
+      color = Colors.red;
+    }
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 4,
+        ),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.10),
+          borderRadius:
+              BorderRadius.circular(10),
+        ),
+        child: Text(
+          status,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: color,
+            fontSize: 8,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // COMMON PANEL
+  // ============================================================
+
+  Widget _panel({
+    required String title,
+    required Widget child,
+    String? action,
+    VoidCallback? actionOnTap,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+            BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xFFE5E7EB),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+
+          Row(
+            children: [
+
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF111827),
+                ),
+              ),
+
+              const Spacer(),
+
+              if (action != null)
+                InkWell(
+                  onTap: actionOnTap,
+                  child: Text(
+                    action,
+                    style: const TextStyle(
+                      color: Color(0xFF2563EB),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+
+          const SizedBox(height: 3),
+
+          child,
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
+
+  void _showMessage(
+    BuildContext context,
+    String message,
+  ) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// TABLE HEADER STYLE
+// ============================================================
+
+const TextStyle _tableHeaderStyle = TextStyle(
+  fontSize: 10,
+  fontWeight: FontWeight.w600,
+  color: Color(0xFF6B7280),
+);
